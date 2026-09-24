@@ -1,0 +1,13 @@
+{
+  "name": "@promptgenius/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Framework-free engine: platform adapters, token estimation, cost, scoring. No UI, no network.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
