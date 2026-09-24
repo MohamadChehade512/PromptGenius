@@ -1,0 +1,21 @@
+{
+  "name": "@promptgenius/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API handlers (Hono). Runs on Node locally; the same app deploys to AWS Lambda in Phase 3.",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@promptgenius/api-contract": "workspace:*",
+    "hono": "^4.13.8",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.6",
+    "tsx": "^4.23.15"
+  }
+}
