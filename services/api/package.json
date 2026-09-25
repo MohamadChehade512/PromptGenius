@@ -9,8 +9,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
+    "@google/genai": "^2.24.0",
     "@hono/node-server": "^2.1.1",
     "@promptgenius/api-contract": "workspace:*",
+    "@promptgenius/core": "workspace:*",
     "hono": "^4.13.8",
     "zod": "^4.6.5"
   },

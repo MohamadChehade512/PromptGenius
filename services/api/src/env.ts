@@ -2,18 +2,26 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
+const optionalKey = z
+  .string()
+  .optional()
+  .transform((v) => (v?.trim() ? v.trim() : undefined));
+
 const EnvSchema = z.object({
   API_PORT: z.coerce.number().int().positive().default(8787),
-  // Optional until M5 (exact counting) and M7 (rewrite) need them.
-  ANTHROPIC_API_KEY: z.string().optional(),
-  GEMINI_API_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: optionalKey,
+  GEMINI_API_KEY: optionalKey,
   REWRITE_DAILY_CAP_USD: z.coerce.number().positive().default(2),
+  REWRITE_MODEL: z.string().default('claude-opus-5'),
+  REWRITE_EFFORT: z.enum(['low', 'medium', 'high']).default('medium'),
 });
 export type Env = z.infer<typeof EnvSchema>;
 
+export const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
+
 /** Loads the repo-root .env.local (if present) and validates it. Local development only. */
 export function loadLocalEnv(): Env {
-  const envFile = fileURLToPath(new URL('../../../.env.local', import.meta.url));
+  const envFile = `${REPO_ROOT}.env.local`;
   if (existsSync(envFile)) process.loadEnvFile(envFile);
   return EnvSchema.parse(process.env);
 }

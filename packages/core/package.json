@@ -8,6 +8,14 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p scripts",
+    "calibrate": "tsx scripts/calibrate.ts"
+  },
+  "dependencies": {
+    "gpt-tokenizer": "^4.0.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }
