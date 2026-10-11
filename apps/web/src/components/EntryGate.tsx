@@ -11,18 +11,18 @@ import {
 } from '../lib/agreement';
 import { TermsText } from './TermsText';
 
-function LoadingScreen() {
+function LoadingScreen({ label }: { label: string }) {
   return (
     <div className="entry entry-loading" role="status" aria-live="polite">
       <div className="entry-progress" aria-hidden="true">
         <span />
       </div>
-      <span className="entry-status">Loading Prompt Workshop…</span>
+      <span className="entry-status">Loading {label}…</span>
     </div>
   );
 }
 
-function TermsScreen({ onAgree }: { onAgree: (a: Agreement) => void }) {
+function TermsScreen({ onAgree, label }: { onAgree: (a: Agreement) => void; label: string }) {
   const titleId = useId();
   const termsId = useId();
   const [name, setName] = useState('');
@@ -45,7 +45,7 @@ function TermsScreen({ onAgree }: { onAgree: (a: Agreement) => void }) {
   return (
     <main className="entry entry-terms" aria-labelledby={titleId}>
       <div className="entry-card card">
-        <p className="eyebrow">Prompt Workshop</p>
+        <p className="eyebrow">{label}</p>
         <h1 id={titleId}>Before you start</h1>
         <p className="beta-banner" role="note">
           <span className="beta-badge">Beta</span>
@@ -128,6 +128,8 @@ export function EntryGate(props: {
   children: (agreement: Agreement, withdraw: () => void) => ReactNode;
   /** How long the loading screen shows at least; 0 in tests. */
   minLoadingMs?: number;
+  /** Which tool is being entered (default: Prompt Workshop). */
+  label?: string;
 }) {
   const minLoadingMs = props.minLoadingMs ?? 500;
   const [loaded, setLoaded] = useState(false);
@@ -138,8 +140,9 @@ export function EntryGate(props: {
     return () => window.clearTimeout(t);
   }, [minLoadingMs]);
 
-  if (!loaded) return <LoadingScreen />;
-  if (!agreement) return <TermsScreen onAgree={setAgreement} />;
+  const label = props.label ?? 'Prompt Workshop';
+  if (!loaded) return <LoadingScreen label={label} />;
+  if (!agreement) return <TermsScreen onAgree={setAgreement} label={label} />;
   return props.children(agreement, () => {
     clearAgreement();
     setAgreement(null);

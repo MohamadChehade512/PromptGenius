@@ -341,9 +341,21 @@ const MATERIAL_REF_RE = new RegExp(
 export const VISUAL_NOUN_RE =
   /\b(?:screenshots?|photos?|images?|pictures?|design|mockups?|logo|slides?|decks?|charts?|diagrams?)\b/;
 
-/** Returns the phrase that points at material ("my resume"), or null. */
+const MATERIAL_REF_ALL_RE = new RegExp(MATERIAL_REF_RE.source, 'g');
+/** "…about the board deck", "due to the report": the thing is the topic, not material to work on. */
+const TOPIC_LEAD_RE = /\b(?:about|regarding|concerning|due to|because of|after|before|until)\s+$/;
+
+/**
+ * Returns the phrase that points at material ("my resume"), or null. A generic "the …" that is
+ * only the topic of the request ("an email about the board deck") doesn't count.
+ */
 export function materialReference(f: TextFeatures): string | null {
-  return MATERIAL_REF_RE.exec(f.instructionLower)?.[0] ?? null;
+  const text = f.instructionLower;
+  for (const m of text.matchAll(MATERIAL_REF_ALL_RE)) {
+    if (m[0].startsWith('the ') && TOPIC_LEAD_RE.test(text.slice(0, m.index))) continue;
+    return m[0];
+  }
+  return null;
 }
 
 const REVIEW_RE =

@@ -31,6 +31,7 @@ import { useHealth } from './hooks/useHealth';
 import { usePersistentState } from './hooks/usePersistentState';
 import { useRewriteStatus } from './hooks/useRewriteStatus';
 import type { Agreement } from './lib/agreement';
+import { takeHandoff } from './lib/handoff';
 import { readStorage, writeStorage } from './lib/storage';
 import { BAND_TONES } from './lib/scoreTone';
 
@@ -67,7 +68,8 @@ export function App(props: { agreement?: Agreement; onWithdraw?: () => void } = 
   const [systemPrompt, setSystemPrompt] = useState('');
   const [historyTokens, setHistoryTokens] = useState(0);
   const [workspace, setWorkspace] = usePersistentState('pg.workspace', false);
-  const [prompt, setPrompt] = useState('');
+  // A prompt dictated in Prompt Studio arrives here when "Open in Workshop" is used.
+  const [prompt, setPrompt] = useState(takeHandoff);
   const files = useAttachments();
   // The tour runs once, right after someone first agrees to the terms; replayable from the footer.
   const [touring, setTouring] = useState(
@@ -195,6 +197,14 @@ export function App(props: { agreement?: Agreement; onWithdraw?: () => void } = 
               chars={analysis.chars}
               words={analysis.words}
             />
+            {/* Right under the prompt box, so a rewrite is read, copied and applied in one place. */}
+            <RewritePanel
+              status={rewriteStatus}
+              onStatusChange={refreshRewrite}
+              input={input}
+              analysis={analysis}
+              onUsePrompt={setPrompt}
+            />
             <AttachmentsInput
               items={files.items}
               tokens={analysis.files}
@@ -216,14 +226,6 @@ export function App(props: { agreement?: Agreement; onWithdraw?: () => void } = 
               onTurns={setTurns}
             />
           )}
-
-          <RewritePanel
-            status={rewriteStatus}
-            onStatusChange={refreshRewrite}
-            input={input}
-            analysis={analysis}
-            onUsePrompt={setPrompt}
-          />
         </div>
 
         <div className="col-side">

@@ -473,3 +473,24 @@ describe('coding prompts get coding advice (user report, 2026-10-02)', () => {
       }
   });
 });
+
+describe('labeled prompts from Prompt Studio score on what they say', () => {
+  const PROMPT = `Write an email to Michael (head of finance) about rescheduling the budget meeting to Thursday due to the board deck being delayed.
+Tone: professional
+Length: a few sentences`;
+
+  it('counts "due to…" as a purpose and "a few sentences" as a length', () => {
+    const r = score(PROMPT, 'claude', 'writing');
+    expect(ruleIds(r)).not.toContain('context.no-purpose');
+    expect(ruleIds(r)).not.toContain('output.no-length');
+    expect(r.total).toBeGreaterThanOrEqual(90);
+  });
+
+  it('treats "about the board deck" as the topic, not a missing attachment', () => {
+    expect(ruleIds(score(PROMPT, 'claude', 'writing'))).not.toContain('clarity.missing-referent');
+    // …but "my deck" with nothing attached is still something the model can't see.
+    expect(ruleIds(score('Give me feedback about my deck.', 'claude', 'writing'))).toContain(
+      'clarity.missing-referent',
+    );
+  });
+});

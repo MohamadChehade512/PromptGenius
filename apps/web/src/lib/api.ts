@@ -4,8 +4,11 @@ import {
   HealthResponse,
   RewriteEvent,
   RewriteStatusResponse,
+  StudioRefineResponse,
+  StudioStatusResponse,
   type CountTokensRequest,
   type RewriteRequest,
+  type StudioRefineRequest,
 } from '@promptgenius/api-contract';
 
 /** Every API response is validated against the shared contract before use. */
@@ -89,4 +92,28 @@ export async function streamRewrite(
       if (data) onEvent(RewriteEvent.parse(JSON.parse(data)));
     }
   }
+}
+
+export async function getStudioStatus(signal?: AbortSignal): Promise<StudioStatusResponse> {
+  const res = await fetch('/api/studio/status', { signal });
+  if (!res.ok) throw await failure(res);
+  return StudioStatusResponse.parse(await res.json());
+}
+
+/**
+ * PAID: POST /api/studio/refine. Only ever called while the person has switched on
+ * "Refine with Claude" in Prompt Studio, which states the price.
+ */
+export async function refineStudio(
+  req: StudioRefineRequest,
+  signal: AbortSignal,
+): Promise<StudioRefineResponse> {
+  const res = await fetch('/api/studio/refine', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(req),
+    signal,
+  });
+  if (!res.ok) throw await failure(res);
+  return StudioRefineResponse.parse(await res.json());
 }

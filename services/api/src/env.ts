@@ -14,6 +14,7 @@ const EnvSchema = z.object({
   REWRITE_DAILY_CAP_USD: z.coerce.number().positive().default(2),
   REWRITE_MODEL: z.string().default('claude-opus-5'),
   REWRITE_EFFORT: z.enum(['low', 'medium', 'high']).default('medium'),
+  STUDIO_MODEL: z.string().default('claude-haiku-4-5'),
 });
 export type Env = z.infer<typeof EnvSchema>;
 

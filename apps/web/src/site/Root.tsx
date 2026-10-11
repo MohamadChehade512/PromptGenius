@@ -3,20 +3,24 @@ import { usePath } from '../lib/router';
 import { DocsPage } from './DocsPage';
 import { HomePage } from './HomePage';
 import { SiteFooter, SiteHeader } from './SiteHeader';
-import { NotFoundPage, StudioPage } from './SimplePages';
+import { NotFoundPage } from './SimplePages';
 
 const WorkshopPage = lazy(() => import('./WorkshopPage'));
+const StudioPage = lazy(() => import('./StudioPage'));
 
-function Loading() {
+function Loading({ label }: { label: string }) {
   return (
     <div className="page-loading" role="status">
-      Loading Prompt Workshop…
+      Loading {label}…
     </div>
   );
 }
 
-/** If the Workshop's code can't load (offline, or the access check), offer a clean retry. */
-class WorkshopBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+/** If a tool's code can't load (offline, or the access check), offer a clean retry. */
+class ToolBoundary extends Component<
+  { children: ReactNode; label: string; href: string },
+  { failed: boolean }
+> {
   override state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
@@ -25,9 +29,9 @@ class WorkshopBoundary extends Component<{ children: ReactNode }, { failed: bool
     if (!this.state.failed) return this.props.children;
     return (
       <main className="page notice-page">
-        <h1 className="display">The Workshop didn’t load.</h1>
+        <h1 className="display">{this.props.label} didn’t load.</h1>
         <p className="lede">Check your connection, then try again.</p>
-        <a className="button primary" href="/workshop">
+        <a className="button primary" href={this.props.href}>
           Try again
         </a>
       </main>
@@ -43,14 +47,20 @@ function page(path: string) {
       return <DocsPage />;
     case '/workshop':
       return (
-        <WorkshopBoundary>
-          <Suspense fallback={<Loading />}>
+        <ToolBoundary label="The Workshop" href="/workshop">
+          <Suspense fallback={<Loading label="Prompt Workshop" />}>
             <WorkshopPage />
           </Suspense>
-        </WorkshopBoundary>
+        </ToolBoundary>
       );
     case '/studio':
-      return <StudioPage />;
+      return (
+        <ToolBoundary label="Studio" href="/studio">
+          <Suspense fallback={<Loading label="Prompt Studio" />}>
+            <StudioPage />
+          </Suspense>
+        </ToolBoundary>
+      );
     default:
       return <NotFoundPage />;
   }

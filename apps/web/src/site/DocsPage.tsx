@@ -64,7 +64,8 @@ export function DocsPage() {
                 type.
               </li>
               <li>
-                <strong>Prompt Studio</strong>: speak instead of typing (under construction).
+                <strong>Prompt Studio</strong>: speak a prompt and have it refined and scored as you
+                talk.
               </li>
             </ul>
           </section>
@@ -304,6 +305,11 @@ export function DocsPage() {
                 rewrite it. It will always show the price and ask before running. File names are
                 shared, never file contents.
               </li>
+              <li>
+                In Prompt Studio, your browser turns speech into text. Chrome and Edge send the
+                audio to their own speech service to do that; Prompt IQ never receives or stores
+                your audio or your words.
+              </li>
             </ul>
           </section>
 
@@ -333,9 +339,41 @@ export function DocsPage() {
           <section id="studio">
             <h2>Prompt Studio</h2>
             <p>
-              Prompt Studio is under construction. You’ll talk through what you need, and Studio
-              will turn it into an optimized prompt using the same scoring and guidance as the
-              Workshop, so you get a strong prompt without writing one.
+              In Prompt Studio you speak instead of typing. Tap the microphone and say what you
+              need, then copy the finished prompt into your chat.
+            </p>
+            <ol>
+              <li>
+                <strong>It listens.</strong> Your browser’s built-in speech recognition turns your
+                voice into text (Chrome, Edge and Safari).
+              </li>
+              <li>
+                <strong>It fixes slips.</strong> “Draft an email to Roger, um, I mean Michael”
+                becomes “Draft an email to Michael.” Fillers, stutters and “scratch that” are
+                handled too.
+              </li>
+              <li>
+                <strong>It builds the prompt.</strong> Politeness padding is dropped, and context
+                you say out loud (“the tone should be friendly”, “the purpose is…”, “keep it under
+                100 words”) becomes a labeled line. Saying one again replaces it.
+              </li>
+              <li>
+                <strong>It coaches and scores.</strong> Suggestions such as “Add a purpose” show
+                what to say next, and the score rises as you add it.
+              </li>
+            </ol>
+            <p>
+              Studio works in two modes. The built-in mode uses rules: it’s free and instant, and
+              nothing you say leaves your browser after transcription, but it only catches common
+              phrasings. <strong>Refine with Claude</strong> is an optional, paid mode that sends
+              the text of what you said to Claude each time you pause. It understands corrections
+              and context said naturally (“he’s senior, so not too casual”), and can ask you one
+              question when something important is missing. It costs a fraction of a cent per update
+              and shows what it has spent.
+            </p>
+            <p className="note">
+              Refine with Claude isn’t on the live site yet: paid features wait for accounts and
+              spending limits. Either way, check the prompt before sending it.
             </p>
           </section>
 
@@ -347,7 +385,11 @@ export function DocsPage() {
                 score differently between versions.
               </li>
               <li>Claude and Gemini token counts are estimates until the server is live.</li>
-              <li>The AI rewrite and Prompt Studio aren’t available yet.</li>
+              <li>The AI rewrite isn’t available yet.</li>
+              <li>
+                Prompt Studio needs Chrome, Edge or Safari. Its Claude-powered refine isn’t on the
+                live site yet.
+              </li>
             </ul>
           </section>
         </article>

@@ -5,6 +5,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import type { AppDeps } from './deps';
 import { countRoutes } from './routes/count';
 import { rewriteRoutes } from './routes/rewrite';
+import { studioRoutes } from './routes/studio';
 import { jsonError } from './routes/util';
 
 export const API_VERSION = '0.1.0';
@@ -29,11 +30,13 @@ export function createApp(deps: AppDeps) {
         countClaude: !!deps.counters.claude,
         countGemini: !!deps.counters.gemini,
         rewrite: !!deps.rewriter,
+        studio: !!deps.studio,
       },
     } satisfies HealthResponse),
   );
   app.route('/', countRoutes(deps));
   app.route('/', rewriteRoutes(deps));
+  app.route('/', studioRoutes(deps));
 
   // Never leak internals (stack traces, upstream errors) to the client.
   app.onError((err, c) => {

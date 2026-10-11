@@ -19,6 +19,7 @@ export * from './scoring/weights';
 export { ALL_RULES } from './scoring/rules';
 export * from './platforms';
 export * from './analyze';
+export * from './voice';
 
 import { PLATFORMS, type PlatformId } from './types';
 import { MODELS_CONFIG } from './config';

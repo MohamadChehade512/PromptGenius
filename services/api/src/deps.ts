@@ -1,6 +1,7 @@
 import type { RateLimiter } from './ratelimit/memory';
 import type { Rewriter } from './rewrite/types';
 import type { SpendStore } from './spend/types';
+import type { StudioRefiner } from './studio/types';
 import type { TokenCounter } from './counters/types';
 
 /**
@@ -10,6 +11,8 @@ import type { TokenCounter } from './counters/types';
 export interface AppDeps {
   counters: { claude?: TokenCounter; gemini?: TokenCounter };
   rewriter?: Rewriter;
+  /** Prompt Studio's Claude refine (paid; shares the daily spend cap). */
+  studio?: StudioRefiner;
   spend: SpendStore;
   limiter: RateLimiter;
 }
@@ -17,4 +20,6 @@ export interface AppDeps {
 export const RATE_LIMITS = {
   count: { max: 120, windowMs: 60_000 },
   rewrite: { max: 10, windowMs: 10 * 60_000 },
+  // Studio refines as someone speaks, so it's called often; each call is tiny.
+  studio: { max: 120, windowMs: 10 * 60_000 },
 } as const;

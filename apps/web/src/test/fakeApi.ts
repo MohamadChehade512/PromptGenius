@@ -2,6 +2,7 @@ import type {
   HealthResponse,
   RewriteEvent,
   RewriteStatusResponse,
+  StudioRefineResult,
 } from '@promptgenius/api-contract';
 import { vi } from 'vitest';
 
@@ -10,6 +11,8 @@ export interface FakeApiOptions {
   rewriteEnabled?: boolean;
   countTokens?: number;
   rewriteEvents?: RewriteEvent[];
+  /** Prompt Studio's Claude refine: on when set; called with each request's transcript. */
+  studioRefine?: (transcript: string) => StudioRefineResult | { error: string; status: number };
 }
 
 export function rewriteStatus(enabled: boolean): RewriteStatusResponse {
@@ -44,6 +47,7 @@ export function installFakeApi(opts: FakeApiOptions = {}) {
             countClaude: false,
             countGemini: false,
             rewrite: !!opts.rewriteEnabled,
+            studio: !!opts.studioRefine,
             ...opts.features,
           },
         }),
@@ -55,6 +59,36 @@ export function installFakeApi(opts: FakeApiOptions = {}) {
       return Promise.resolve(Response.json({ tokens: opts.countTokens ?? 5, model: 'x' }));
     if (url === '/api/rewrite' && init?.method === 'POST')
       return Promise.resolve(sse(opts.rewriteEvents ?? []));
+    if (url === '/api/studio/status')
+      return Promise.resolve(
+        Response.json({
+          enabled: !!opts.studioRefine,
+          model: 'claude-haiku-4-5',
+          modelLabel: 'Claude Haiku 4.5',
+          typicalCostUsd: 0.0009,
+          capUsd: 2,
+          remainingUsd: 2,
+        }),
+      );
+    if (url === '/api/studio/refine' && init?.method === 'POST' && opts.studioRefine) {
+      const { transcript } = JSON.parse(init.body as string) as { transcript: string };
+      const out = opts.studioRefine(transcript);
+      return Promise.resolve(
+        'error' in out
+          ? Response.json({ error: out.error, message: 'Refine failed.' }, { status: out.status })
+          : Response.json({
+              result: out,
+              usage: {
+                inputTokens: 550,
+                outputTokens: 40,
+                cacheReadTokens: 0,
+                cacheWriteTokens: 0,
+              },
+              costUsd: 0.0008,
+              model: 'claude-haiku-4-5',
+            }),
+      );
+    }
     return Promise.resolve(Response.json({ error: 'not_found' }, { status: 404 }));
   });
   vi.stubGlobal('fetch', fetchMock);

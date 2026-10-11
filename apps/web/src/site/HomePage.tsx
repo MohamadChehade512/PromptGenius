@@ -2,6 +2,7 @@ import { linkClick, useDocumentTitle } from '../lib/router';
 import { HeroDemo } from './home/HeroDemo';
 import { Reveal } from './home/parts';
 import { ReadingSteps, RetryCost, TokenizerView } from './home/Sections';
+import { StudioDemo } from './home/StudioDemo';
 
 /** The front door: what Prompt IQ does (shown working), and the way into each of its parts. */
 export function HomePage() {
@@ -23,11 +24,14 @@ export function HomePage() {
             <a className="button primary" href="/workshop">
               Open Prompt Workshop
             </a>
-            <a className="button secondary" href="/docs" onClick={linkClick('/docs')}>
-              How it works
+            <a className="button secondary" href="/studio">
+              <span className="soon-tag">New</span> Speak it in Studio
+            </a>
+            <a className="hero-link" href="/docs" onClick={linkClick('/docs')}>
+              How it works <span aria-hidden="true">→</span>
             </a>
           </div>
-          <p className="hint">The Workshop needs an access code during the beta.</p>
+          <p className="hint">The Workshop and Studio need an access code during the beta.</p>
         </div>
         <HeroDemo />
       </section>
@@ -41,6 +45,40 @@ export function HomePage() {
 
         <Reveal>
           <TokenizerView />
+        </Reveal>
+
+        <Reveal as="section" className="studio-intro">
+          <div className="studio-intro-copy">
+            <p className="eyebrow">
+              Prompt Studio <span className="soon-tag">New</span>
+            </p>
+            <h2 className="section-title">Say it. Studio writes the prompt.</h2>
+            <p className="section-lede">
+              Talk the way you normally would. Studio removes the slips and filler, builds a tight
+              prompt while you speak, and tells you what to add to make it better.
+            </p>
+            <ol className="studio-points">
+              <li>
+                <strong>Fixes what you didn’t mean</strong>
+                “Roger, I mean Michael” becomes Michael. Ums and repeats are dropped.
+              </li>
+              <li>
+                <strong>Coaches while you talk</strong>
+                Say a tone, a length or a purpose and watch the score rise.
+              </li>
+              <li>
+                <strong>Shows what you save</strong>
+                Prompt quality and tokens per answer, before and after.
+              </li>
+            </ol>
+            <div className="hero-actions">
+              <a className="button primary" href="/studio">
+                Open Prompt Studio
+              </a>
+            </div>
+            <p className="hint">Access code required. Works in Chrome, Edge and Safari.</p>
+          </div>
+          <StudioDemo />
         </Reveal>
 
         <Reveal as="section" className="products">
@@ -72,17 +110,18 @@ export function HomePage() {
               <span className="product-note">Access code required</span>
             </article>
 
-            <article className="product product-soon" aria-describedby="studio-status">
+            <article className="product">
               <h3>
-                Prompt Studio <span className="soon-tag">Under construction</span>
+                Prompt Studio <span className="soon-tag">New</span>
               </h3>
               <p>
-                Talk through what you need, and Studio will turn it into an optimized, ready-to-send
-                prompt.
+                Say what you need. Studio fixes spoken slips, builds a tight prompt as you talk, and
+                tells you what to add to make it better.
               </p>
-              <span className="product-link is-disabled" id="studio-status" aria-disabled="true">
-                Not available yet
-              </span>
+              <a className="product-link" href="/studio">
+                Open Studio <span aria-hidden="true">→</span>
+              </a>
+              <span className="product-note">Access code required · Chrome, Edge or Safari</span>
             </article>
           </div>
         </Reveal>

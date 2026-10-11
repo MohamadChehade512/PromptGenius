@@ -4,7 +4,7 @@ import { readStorage, writeStorage } from './storage';
  * Bump this whenever the terms change: everyone is asked to agree again. Keep it in step
  * with the "Last updated" date shown in the terms.
  */
-export const TERMS_VERSION = '2026-09-30';
+export const TERMS_VERSION = '2026-10-03';
 
 export interface Agreement {
   name: string;

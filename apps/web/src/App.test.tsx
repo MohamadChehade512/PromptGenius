@@ -150,6 +150,11 @@ describe('Paid AI rewrite', () => {
     expect(screen.getByLabelText<HTMLTextAreaElement>('Your prompt').value).toBe(
       result.result.rewritten_prompt,
     );
+
+    // The result gives way to a one-line confirmation, and Undo brings the original back.
+    expect(screen.queryByRole('button', { name: 'Use this prompt' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(screen.getByLabelText<HTMLTextAreaElement>('Your prompt').value).toBe(WEAK);
   });
 
   it('shows errors and any partial charge', async () => {

@@ -14,6 +14,7 @@ type State =
   | { kind: 'idle' }
   | { kind: 'running'; stage: 'starting' | 'thinking' | 'writing'; outputTokens: number }
   | { kind: 'done'; original: string; result: RewriteResult; costUsd: number; model: string }
+  | { kind: 'applied'; original: string }
   | { kind: 'error'; message: string; costUsd: number };
 
 const CONFIRM_KEY = 'pg.rewrite.confirmed';
@@ -120,17 +121,8 @@ export function RewritePanel(props: {
   }
 
   return (
-    <section className="card rewrite" aria-labelledby="rewrite-title" data-tour="rewrite">
+    <section className="rewrite" aria-labelledby="rewrite-title" data-tour="rewrite">
       <div className="rewrite-head">
-        <div>
-          <h2 id="rewrite-title">AI rewrite</h2>
-          <p className="hint">
-            Optional and <strong>paid</strong>. Sends your prompt
-            {analysis.files.length > 0 ? ' and the names (not contents) of attached files' : ''} to
-            the Claude API ({status?.modelLabel ?? 'Claude'}) to rewrite it for{' '}
-            {analysis.model.label}. Everything else on this page is free.
-          </p>
-        </div>
         {running ? (
           <button
             type="button"
@@ -150,12 +142,21 @@ export function RewritePanel(props: {
             ✨ Rewrite with AI · Paid · ≈ {formatUsd(estimate)}
           </button>
         )}
+        <div>
+          <h2 id="rewrite-title">AI rewrite</h2>
+          <p className="hint">
+            Optional and <strong>paid</strong>. Sends your prompt
+            {analysis.files.length > 0 ? ' and the names (not contents) of attached files' : ''} to
+            the Claude API ({status?.modelLabel ?? 'Claude'}) to rewrite it for{' '}
+            {analysis.model.label}. Everything else on this page is free.
+          </p>
+          <p id="rewrite-note" className="hint">
+            {disabledReason ??
+              (status &&
+                `Daily budget: ${formatUsd(status.spentUsd)} of $${status.capUsd.toFixed(2)} used today.`)}
+          </p>
+        </div>
       </div>
-      <p id="rewrite-note" className="hint">
-        {disabledReason ??
-          (status &&
-            `Daily budget: ${formatUsd(status.spentUsd)} of $${status.capUsd.toFixed(2)} used today.`)}
-      </p>
 
       {state.kind === 'running' && (
         <p className="progress" role="status">
@@ -173,8 +174,26 @@ export function RewritePanel(props: {
           state={state}
           input={input}
           before={analysis}
-          onUsePrompt={props.onUsePrompt}
+          onUsePrompt={(text) => {
+            props.onUsePrompt(text);
+            setState({ kind: 'applied', original: state.original });
+          }}
         />
+      )}
+      {state.kind === 'applied' && (
+        <p className="rewrite-applied" role="status">
+          The rewrite is now in your prompt box.{' '}
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => {
+              props.onUsePrompt(state.original);
+              setState({ kind: 'idle' });
+            }}
+          >
+            Undo
+          </button>
+        </p>
       )}
 
       <dialog ref={dialogRef} className="confirm" aria-labelledby="confirm-title">
@@ -222,34 +241,45 @@ function RewriteResultView(props: {
   const afterTokens = after.promptTokens.tokens;
   const delta = (a: number, b: number) => (b - a >= 0 ? `+${b - a}` : String(b - a));
 
+  const beforeScore = before.score?.total ?? 0;
+  const afterScore = after.score?.total ?? 0;
+
   return (
     <div className="rewrite-result">
-      <p className="cost-note">
-        This rewrite cost <strong>{formatUsd(state.costUsd)}</strong> ({state.model}).
-      </p>
-      <div className="compare">
+      <div className="rewrite-result-head">
         <div>
-          <h3>
-            Original · score {before.score?.total ?? 0} · ~{beforeTokens} tokens
-          </h3>
-          <pre>{state.original}</pre>
-        </div>
-        <div>
-          <h3>
-            Rewritten · score {after.score?.total ?? 0} (
-            {delta(before.score?.total ?? 0, after.score?.total ?? 0)}) · ~{afterTokens} tokens (
+          <h3>Rewritten prompt</h3>
+          <p className="hint">
+            Score {beforeScore} → <strong>{afterScore}</strong> ({delta(beforeScore, afterScore)}) ·
+            ~{beforeTokens} → <strong>~{afterTokens} tokens</strong> (
             {delta(beforeTokens, afterTokens)})
-          </h3>
-          <pre>{state.result.rewritten_prompt}</pre>
+          </p>
+        </div>
+        <div className="rewrite-actions">
+          <button
+            type="button"
+            className="button secondary small"
+            onClick={() => {
+              void navigator.clipboard
+                ?.writeText(state.result.rewritten_prompt)
+                .then(() => setCopied(true));
+            }}
+          >
+            {copied ? 'Copied' : 'Copy'}
+          </button>
+          <button
+            type="button"
+            className="button primary small"
+            onClick={() => props.onUsePrompt(state.result.rewritten_prompt)}
+          >
+            Use this prompt
+          </button>
         </div>
       </div>
-      <p className="hint">
-        Estimated cost per call on {before.model.label}: {formatUsd(before.cost.mid)} →{' '}
-        {formatUsd(after.cost.mid)}.
-      </p>
+      <pre className="rewrite-text">{state.result.rewritten_prompt}</pre>
       {state.result.changes.length > 0 && (
-        <>
-          <h3>What changed</h3>
+        <details className="rewrite-changes">
+          <summary>What changed ({state.result.changes.length})</summary>
           <ul className="changes">
             {state.result.changes.map((c, i) => (
               <li key={i}>
@@ -257,28 +287,13 @@ function RewriteResultView(props: {
               </li>
             ))}
           </ul>
-        </>
+        </details>
       )}
-      <div className="dialog-actions">
-        <button
-          type="button"
-          className="button secondary"
-          onClick={() => {
-            void navigator.clipboard
-              ?.writeText(state.result.rewritten_prompt)
-              .then(() => setCopied(true));
-          }}
-        >
-          {copied ? 'Copied' : 'Copy'}
-        </button>
-        <button
-          type="button"
-          className="button primary"
-          onClick={() => props.onUsePrompt(state.result.rewritten_prompt)}
-        >
-          Use this prompt
-        </button>
-      </div>
+      <p className="hint cost-note">
+        This rewrite cost <strong>{formatUsd(state.costUsd)}</strong> ({state.model}). Estimated
+        cost per call on {before.model.label}: {formatUsd(before.cost.mid)} →{' '}
+        {formatUsd(after.cost.mid)}.
+      </p>
     </div>
   );
 }

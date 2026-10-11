@@ -1,7 +1,7 @@
 // Prompt IQ edge function: a CloudFront Function (cloudfront-js-2.0) on viewer requests.
 //
-// 1. Access codes for the Prompt Workshop. The Workshop page and its code bundle (assets/w/,
-//    which holds the scoring engine) need a valid code; the home page and docs are public.
+// 1. Access codes for the Prompt Workshop and Prompt Studio. Their pages and their code bundle
+//    (assets/w/, which holds the scoring engine) need a valid code; home and docs are public.
 //    The codes (code -> who it's for) are written into the deployed copy of this function by
 //    scripts/access-gate.sh, in place of `__CODES__`; they are never in this repo. (A CloudFront
 //    KeyValueStore would be neater, but the CloudFront Free plan doesn't allow one on a function.)
@@ -9,6 +9,7 @@
 //    served the single-page app's index.html.
 //
 //   /__access?code=PIQ-XXXX-XXXX  checks a code, sets the cookie, opens the Workshop
+//   /__access?code=…&to=studio    …or Studio
 //   /__logout                     clears the cookie
 //
 // The cookie holds the code itself and is re-checked on every request, so removing a code locks
@@ -31,8 +32,17 @@ function isValid(code) {
   return code !== '' && Object.prototype.hasOwnProperty.call(CODES, code);
 }
 
+function isStudio(uri) {
+  return uri === '/studio' || uri.indexOf('/studio/') === 0;
+}
+
 function isGated(uri) {
-  return uri === '/workshop' || uri.indexOf('/workshop/') === 0 || uri.indexOf('/assets/w/') === 0;
+  return (
+    uri === '/workshop' ||
+    uri.indexOf('/workshop/') === 0 ||
+    isStudio(uri) ||
+    uri.indexOf('/assets/w/') === 0
+  );
 }
 
 function hasValidCookie(request) {
@@ -40,7 +50,8 @@ function hasValidCookie(request) {
   return !!cookie && isValid(normalize(cookie.value));
 }
 
-function page(error) {
+function page(error, studio) {
+  const tool = studio ? 'Studio' : 'Workshop';
   const message = error
     ? '<p class="error" role="alert">That code didn’t work. Check it and try again.</p>'
     : '';
@@ -52,7 +63,9 @@ function page(error) {
     '<meta name="robots" content="noindex">' +
     '<link rel="icon" type="image/svg+xml" href="/favicon.svg">' +
     '<link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>' +
-    '<title>Prompt Workshop · Access code</title><style>' +
+    '<title>Prompt ' +
+    tool +
+    ' · Access code</title><style>' +
     "@font-face{font-family:'Inter Variable';font-style:normal;font-display:swap;font-weight:100 900;" +
     "src:url(/fonts/inter-latin.woff2) format('woff2-variations')}" +
     ':root{--bg:#f7f5f0;--card:#fff;--soft:#f2efe8;--text:#1b1a17;--text2:#4a4740;--muted:#77736a;--border:#e4e0d6;' +
@@ -92,9 +105,15 @@ function page(error) {
     '<header><a class="brand" href="/">Prompt IQ</a><span class="badge">BETA</span></header>' +
     '<main><div class="card">' +
     '<p class="eyebrow"><span class="dot"></span>Private beta</p>' +
-    '<h1>Prompt Workshop</h1>' +
-    '<p>The Workshop is in a private beta. Enter the access code you were given.</p>' +
-    '<form method="get" action="/__access"><label for="code">Access code</label>' +
+    '<h1>Prompt ' +
+    tool +
+    '</h1>' +
+    '<p>' +
+    (studio ? 'Studio' : 'The Workshop') +
+    ' is in a private beta. Enter the access code you were given.</p>' +
+    '<form method="get" action="/__access">' +
+    (studio ? '<input type="hidden" name="to" value="studio">' : '') +
+    '<label for="code">Access code</label>' +
     '<input id="code" name="code" placeholder="PIQ-XXXX-XXXX-XXXX" autocomplete="off" ' +
     'autocapitalize="characters" spellcheck="false" required autofocus>' +
     '<button type="submit">Continue</button></form>' +
@@ -135,11 +154,14 @@ function handler(event) {
   if (uri === '/__access') {
     const param = request.querystring.code;
     const code = normalize(param && param.value);
-    if (isValid(code)) return redirect('/workshop', code, ATTRS + '; Max-Age=' + MAX_AGE);
-    return page(true);
+    const to = request.querystring.to;
+    const studio = !!to && to.value === 'studio';
+    if (isValid(code))
+      return redirect(studio ? '/studio' : '/workshop', code, ATTRS + '; Max-Age=' + MAX_AGE);
+    return page(true, studio);
   }
 
-  if (isGated(uri) && !hasValidCookie(request)) return page(false);
+  if (isGated(uri) && !hasValidCookie(request)) return page(false, isStudio(uri));
 
   // Page addresses (no file extension) are all served by the app's index.html.
   const last = uri.slice(uri.lastIndexOf('/') + 1);

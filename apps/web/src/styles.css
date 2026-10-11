@@ -2237,19 +2237,28 @@ summary {
   color: var(--muted);
 }
 
-/* ---------- Paid rewrite ---------- */
-.card.rewrite {
-  border-color: var(--border-strong);
+/* ---------- Paid rewrite (inside the prompt card, under the prompt box) ---------- */
+.rewrite {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
 }
 .rewrite-head {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px 16px;
   align-items: flex-start;
-  justify-content: space-between;
 }
 .rewrite-head > div {
-  flex: 1 1 240px;
+  flex: 1 1 260px;
+}
+.rewrite-head h2 {
+  margin: 0 0 2px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.rewrite-head .hint {
+  margin: 0;
 }
 .progress {
   margin-top: 12px;
@@ -2260,26 +2269,57 @@ summary {
   color: var(--error);
 }
 .rewrite-result {
-  margin-top: 16px;
-}
-.cost-note {
-  font-size: 0.875rem;
-}
-.compare {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
-}
-.compare pre {
-  margin: 0;
-  padding: 10px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
   background: var(--surface-2);
+  display: grid;
+  gap: 10px;
+}
+.rewrite-result-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+.rewrite-result-head h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+.rewrite-result .hint {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.rewrite-actions {
+  display: flex;
+  gap: 8px;
+}
+.rewrite-text {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   white-space: pre-wrap;
   word-break: break-word;
-  font-size: 0.8125rem;
-  max-height: 360px;
+  font: inherit;
+  font-size: 0.9375rem;
+  max-height: 320px;
   overflow: auto;
+}
+.rewrite-changes summary {
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.rewrite-changes .changes {
+  margin-top: 8px;
+}
+.rewrite-applied {
+  margin: 12px 0 0;
+  font-size: 0.875rem;
 }
 .changes {
   margin: 0;
@@ -2652,4 +2692,1011 @@ input[aria-invalid='true'] {
 .bar-fill,
 .bar-range {
   transition: width 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ---------- Prompt Studio ---------- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.studio-main {
+  display: grid;
+  gap: 22px;
+}
+
+/* The stage: one big button and what it's doing. */
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition:
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+.stage[data-on] {
+  border-color: color-mix(in srgb, var(--tone-bad) 40%, var(--border));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone-bad) 8%, transparent);
+}
+.stage-text {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.stage-error {
+  flex-basis: 100%;
+  margin: 0;
+}
+.mic {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin: 6px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink-button);
+  color: var(--ink-button-text);
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    background 200ms ease;
+}
+.mic:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+.mic:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.mic:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.mic:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+.mic svg {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mic[data-on] {
+  background: var(--tone-bad);
+  color: #fff;
+}
+.mic[data-on] svg {
+  fill: currentColor;
+  stroke: none;
+}
+/* Listening: two soft rings pulse outward. */
+.mic[data-on]::before,
+.mic[data-on]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--tone-bad);
+  animation: mic-pulse 1.8s ease-out infinite;
+}
+.mic[data-on]::after {
+  animation-delay: 0.9s;
+}
+@keyframes mic-pulse {
+  from {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+.mic-status {
+  font-size: 1.375rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+/* A small sound wave that moves while the mic is on. */
+.wave {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+}
+.wave span {
+  width: 3px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-strong);
+  transition:
+    height 300ms ease,
+    background 300ms ease;
+}
+.wave[data-on] span {
+  background: var(--tone-bad);
+  animation: wave 900ms ease-in-out infinite;
+}
+@keyframes wave {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 20px;
+  }
+}
+.interim,
+.stage-hint,
+.stage-example {
+  min-height: 1.5em;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+.interim {
+  font-style: italic;
+  color: var(--text-2);
+}
+.stage-example {
+  animation: example-in 600ms ease both;
+}
+@keyframes example-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The flow: said → changed → prompt. */
+.flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px minmax(0, 0.85fr) 40px minmax(0, 1.15fr);
+  align-items: stretch;
+}
+.flow-step {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 32px;
+}
+.step-head h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+.step-head .step-num {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  flex: none;
+}
+.step-actions,
+.step-copy,
+.step-head .soon-tag {
+  margin-left: auto;
+}
+.step-actions {
+  display: flex;
+  gap: 12px;
+  font-size: 0.875rem;
+}
+.step-head .soon-tag:empty {
+  display: none;
+}
+.step-empty {
+  font-size: 0.9375rem;
+}
+.flow-arrow {
+  display: grid;
+  place-items: center;
+  color: var(--border-strong);
+}
+.flow-arrow svg {
+  width: 34px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.flow-line {
+  stroke-dasharray: 5 5;
+}
+.flow-arrow[data-active] {
+  color: var(--text);
+}
+.flow-arrow[data-active] .flow-line {
+  animation: flow 700ms linear infinite;
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+@media (max-width: 960px) {
+  .flow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .flow-arrow {
+    height: 34px;
+  }
+  .flow-arrow svg {
+    transform: rotate(90deg);
+  }
+}
+
+/* 1: what was said, with dropped words struck through. */
+.said {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.said-cut {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--tone-bad) 75%, transparent);
+  text-decoration-thickness: 1.5px;
+}
+.said-folded {
+  color: var(--muted);
+  opacity: 0.75;
+}
+.said-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+}
+.said span {
+  animation: word-in 320ms ease both;
+}
+@keyframes word-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.flow-step textarea {
+  min-height: 130px;
+  font-size: 1rem;
+}
+
+/* 2: what was changed. */
+.changes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.changes-list li {
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  animation: chip-pop 380ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.changes-list li span {
+  color: var(--tone-good);
+  margin-right: 2px;
+}
+@keyframes chip-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.claude-toggle {
+  margin-top: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+}
+.claude-toggle .check span {
+  font-weight: 600;
+}
+.claude-toggle .hint {
+  margin-top: 6px;
+}
+.check input[role='switch']:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.paid-tag {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--text-2);
+  vertical-align: 0.1em;
+}
+
+/* 3: the prompt. Each line animates in when it's new or changed. */
+.studio-prompt {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.prompt-line {
+  white-space: pre-wrap;
+  border-radius: 6px;
+  animation: line-in 900ms ease both;
+}
+.prompt-label {
+  margin-top: 4px;
+}
+.label-name {
+  font-weight: 600;
+  color: var(--accent);
+}
+@keyframes line-in {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+    background: color-mix(in srgb, var(--tone-good) 22%, transparent);
+  }
+  35% {
+    opacity: 1;
+    transform: none;
+    background: color-mix(in srgb, var(--tone-good) 22%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+.studio-score {
+  margin-top: 4px;
+}
+.studio-score .band {
+  margin-bottom: 2px;
+}
+.studio-score .hint {
+  margin-top: 4px;
+}
+.ring-wrap {
+  position: relative;
+  flex: none;
+}
+.score-gain {
+  position: absolute;
+  top: -6px;
+  right: -14px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--tone-good);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  animation: gain 1800ms ease forwards;
+  pointer-events: none;
+}
+@keyframes gain {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+
+/* The coach: what to say next. */
+.coach-row h2 {
+  margin-bottom: 12px;
+}
+.coach {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+.coach-tip {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  padding: 14px 16px;
+  padding-right: 56px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 0.9375rem;
+  animation: suggestion-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.coach-tip .points {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.coach-tip .fix {
+  margin-top: 0;
+  font-size: 0.875rem;
+}
+.coach-question {
+  padding-right: 16px;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: var(--accent-soft);
+}
+.coach-who {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.studio-options {
+  padding-top: 4px;
+  color: var(--text-2);
+}
+.studio-options summary {
+  font-weight: 500;
+  color: var(--muted);
+}
+.studio-options[open] summary {
+  margin-bottom: 4px;
+}
+.studio-options .controls {
+  max-width: 640px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic,
+  .stage,
+  .stage-example,
+  .said span,
+  .changes-list li,
+  .prompt-line,
+  .coach-tip,
+  .wave span {
+    animation: none !important;
+    transition: none !important;
+  }
+  .wave[data-on] span {
+    height: 12px;
+  }
+  .mic[data-on]::before,
+  .mic[data-on]::after {
+    animation: none;
+    opacity: 0.4;
+    transform: scale(1.25);
+  }
+  .mic[data-on]::after {
+    display: none;
+  }
+  .flow-arrow[data-active] .flow-line {
+    animation: none;
+  }
+  .score-gain {
+    animation: none;
+  }
+}
+
+/* Studio: what refining saved, as spoken vs refined. */
+.impact {
+  margin-top: 4px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--tone-good) 30%, var(--border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--tone-good) 6%, transparent);
+  animation: suggestion-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.impact-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.impact-table caption {
+  text-align: left;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  padding-bottom: 8px;
+}
+.impact-table caption strong {
+  color: var(--tone-good);
+  font-weight: 700;
+}
+.impact-table thead th {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: right;
+  padding-bottom: 2px;
+}
+.impact-table tbody th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--text-2);
+}
+.impact-table td {
+  text-align: right;
+  padding: 4px 0 4px 10px;
+  white-space: nowrap;
+}
+.impact-table tbody tr + tr th,
+.impact-table tbody tr + tr td {
+  border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+.impact-before {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent);
+}
+.impact-after {
+  font-weight: 650;
+  font-size: 1rem;
+}
+.impact-after .unit {
+  font-size: 0.75rem;
+}
+.impact-delta {
+  display: inline-block;
+  min-width: 44px;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-2);
+}
+.impact-good {
+  border-color: transparent;
+  color: #fff;
+  background: var(--tone-good);
+}
+.impact-prompt {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  font-size: 0.875rem;
+  color: var(--text-2);
+}
+.impact .hint {
+  margin-top: 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .impact {
+    animation: none;
+  }
+}
+
+/* ---------- Home: Prompt Studio intro ---------- */
+.studio-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+}
+.studio-intro-copy {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.studio-intro .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.studio-points {
+  list-style: none;
+  margin: 4px 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+  counter-reset: point;
+}
+.studio-points li {
+  position: relative;
+  padding-left: 40px;
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  counter-increment: point;
+}
+.studio-points li::before {
+  content: counter(point);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.studio-points strong {
+  display: block;
+  color: var(--text);
+}
+.hero-actions .soon-tag {
+  margin-right: 6px;
+}
+.hero-actions {
+  align-items: center;
+}
+.hero-link {
+  padding: 0 8px;
+  font-weight: 550;
+  color: var(--text);
+  text-decoration: none;
+}
+.hero-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.sd {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+.sd-body {
+  display: grid;
+  gap: 16px;
+  padding: 20px 22px;
+}
+.sd-stage {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.sd-mic {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-2);
+  transition:
+    background 300ms ease,
+    color 300ms ease,
+    transform 300ms ease;
+}
+.sd-mic svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.sd-mic[data-on] {
+  background: var(--text);
+  color: var(--bg);
+  transform: scale(1.06);
+}
+.sd-mic[data-on]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--text);
+  animation: sd-ring 1.5s ease-out infinite;
+}
+@keyframes sd-ring {
+  from {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+.sd-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 28px;
+}
+.sd-wave i {
+  width: 3px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-strong);
+  transition: height 300ms ease;
+}
+.sd-wave[data-on] i {
+  background: var(--accent);
+  animation: sd-bar 620ms ease-in-out infinite alternate;
+}
+@keyframes sd-bar {
+  from {
+    height: 4px;
+  }
+  to {
+    height: 26px;
+  }
+}
+.sd-status {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  text-align: right;
+  animation: sd-in 400ms ease both;
+}
+@keyframes sd-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.sd-block {
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.sd-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sd-built {
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.6;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.sd-said {
+  margin: 0;
+  /* Room for three lines, so the card doesn't jump as words arrive. */
+  min-height: 4.8em;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.sd-placeholder {
+  color: var(--muted);
+}
+.sd-word {
+  animation: sd-in 260ms ease both;
+  transition:
+    color 500ms ease,
+    opacity 500ms ease;
+  text-decoration: line-through transparent;
+}
+.sd-word[data-cut] {
+  color: var(--error);
+  opacity: 0.75;
+  text-decoration-color: currentColor;
+}
+.sd-word[data-folded] {
+  color: var(--accent);
+}
+.sd-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  vertical-align: -0.15em;
+  background: var(--accent);
+  animation: sd-blink 900ms steps(2) infinite;
+}
+@keyframes sd-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.sd-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  opacity: 0.25;
+  transition: opacity 500ms ease;
+}
+.sd-result[data-on] {
+  opacity: 1;
+}
+.sd-result:not([data-on]) .sd-line,
+.sd-result:not([data-on]) .sd-coach {
+  visibility: hidden;
+}
+.sd-prompt {
+  /* Room for the context lines, so the card keeps its height as they arrive. */
+  min-height: 11.5em;
+}
+.sd-line {
+  margin: 0;
+  font-weight: 550;
+  line-height: 1.55;
+}
+.sd-line-new {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  color: var(--accent);
+  transform: translateY(-4px);
+  transition:
+    max-height 500ms ease,
+    opacity 500ms ease,
+    transform 500ms ease;
+}
+.sd-line-new[data-on] {
+  max-height: 2em;
+  opacity: 1;
+  transform: none;
+}
+.sd-coach {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sd-coach li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: var(--text-2);
+  transition:
+    color 400ms ease,
+    background 400ms ease,
+    border-color 400ms ease;
+}
+.sd-coach li span {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--tone-good);
+}
+.sd-coach li[data-done] {
+  border-style: solid;
+  border-color: transparent;
+  color: var(--tone-good);
+  background: color-mix(in srgb, var(--tone-good) 12%, transparent);
+}
+.sd-score {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.sd-score .ring-num {
+  font-size: 1.5rem;
+}
+.sd-score-label {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.sd-saving {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tone-good) 10%, transparent);
+  font-size: 0.875rem;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 500ms 300ms ease,
+    transform 500ms 300ms ease;
+}
+.sd-saving[data-on] {
+  opacity: 1;
+  transform: none;
+}
+.sd-saving strong {
+  color: var(--tone-good);
+}
+@media (max-width: 960px) {
+  .studio-intro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .sd-result {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sd-score {
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    align-items: center;
+    gap: 12px;
+  }
+  .sd-status {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sd-word,
+  .sd-status,
+  .sd-mic[data-on]::before,
+  .sd-wave[data-on] i,
+  .sd-caret {
+    animation: none !important;
+  }
+  .sd-line-new,
+  .sd-saving,
+  .sd-result,
+  .sd-coach li {
+    transition: none !important;
+  }
 }

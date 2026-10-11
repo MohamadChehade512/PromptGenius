@@ -54,6 +54,10 @@ const NUMBER_WORDS: Record<string, number> = {
   twenty: 20,
   fifty: 50,
   hundred: 100,
+  // Loose quantities people say: "a few sentences", "a couple of paragraphs".
+  couple: 2,
+  few: 3,
+  several: 5,
 };
 const NUM = `(\\d[\\d,]*|${Object.keys(NUMBER_WORDS).join('|')})`;
 
@@ -143,6 +147,8 @@ function scale(r: Range, k: number): Range {
 export function detectExplicitLength(
   lowerInstructions: string,
 ): { range: Range; detail: string } | null {
+  // "a couple of sentences" reads as "couple sentences".
+  lowerInstructions = lowerInstructions.replace(/\bcouple of\b/g, 'couple');
   if (TINY_ANSWER_RE.test(lowerInstructions)) {
     return { range: { low: 2, mid: 10, high: 40 }, detail: 'a one-word / yes-no answer' };
   }

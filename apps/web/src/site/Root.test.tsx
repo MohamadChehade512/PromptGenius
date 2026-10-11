@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Root } from './Root';
 
@@ -18,15 +18,13 @@ describe('Site', () => {
     expect(screen.getByRole('heading', { name: 'Docs' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Prompt Workshop' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: /^Prompt Studio/ })).toBeTruthy();
-    expect(screen.getAllByText('Under construction').length).toBeGreaterThan(0);
   });
 
-  it('never links to Prompt Studio while it is under construction', () => {
+  it('opens Studio with a full page load too, so the access check runs', () => {
     at('/');
-    const studio = screen.getByRole('heading', { name: /^Prompt Studio/ }).closest('article')!;
-    expect(within(studio).queryByRole('link')).toBeNull();
-    const nav = screen.getByRole('navigation', { name: 'Main' });
-    expect(within(nav).queryByRole('link', { name: /Studio/ })).toBeNull();
+    const links = screen.getAllByRole('link', { name: /Studio/ });
+    expect(links.length).toBeGreaterThan(1);
+    for (const link of links) expect(link.getAttribute('href')).toBe('/studio');
   });
 
   it('opens the Workshop with a full page load, so the access check runs', () => {
@@ -52,9 +50,12 @@ describe('Site', () => {
     ).toBeTruthy();
   });
 
-  it('shows Studio as under construction and unknown pages as not found', () => {
+  it('asks for the terms when entering Studio, and shows unknown pages as not found', async () => {
     const { unmount } = at('/studio');
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(/Coming soon/);
+    expect(
+      await screen.findByRole('heading', { name: 'Before you start' }, { timeout: 3000 }),
+    ).toBeTruthy();
+    expect(screen.getAllByText('Prompt Studio').length).toBeGreaterThan(0);
     unmount();
     at('/nope');
     expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(/doesn’t exist/);

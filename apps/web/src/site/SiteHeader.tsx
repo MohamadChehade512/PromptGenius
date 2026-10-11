@@ -19,9 +19,9 @@ export function SiteHeader({ path }: { path: string }) {
         <a href="/workshop" aria-current={current('/workshop')}>
           Workshop
         </a>
-        <span className="nav-soon" aria-disabled="true">
-          Studio <span className="soon-tag">Soon</span>
-        </span>
+        <a href="/studio" aria-current={current('/studio')}>
+          Studio <span className="soon-tag">New</span>
+        </a>
       </nav>
       <ThemeToggle />
     </header>

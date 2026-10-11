@@ -104,3 +104,40 @@ export const TOKEN_PIECES = [
 ];
 
 export const usd = (digits: number) => (n: number) => `$${n.toFixed(digits)}`;
+
+/**
+ * The Prompt Studio example. Produced by running the real refiner and scorer
+ * (packages/core refineSpeech + analyzePrompt: Claude, writing) on the two spoken parts below,
+ * then fixed here like the numbers above. `cut` words are the slips Studio removes.
+ */
+export const SPOKEN = {
+  first: [
+    { word: 'um', cut: true },
+    { word: 'draft' },
+    { word: 'an' },
+    { word: 'email' },
+    { word: 'to' },
+    { word: 'Roger', cut: true },
+    { word: 'I', cut: true },
+    { word: 'mean', cut: true },
+    { word: 'Michael' },
+    { word: 'about' },
+    { word: 'moving' },
+    { word: 'the' },
+    { word: 'budget' },
+    { word: 'meeting' },
+    { word: 'to' },
+    { word: 'Thursday' },
+  ],
+  second: 'the tone should be friendly and keep it under 100 words'.split(' '),
+  request: 'Draft an email to Michael about moving the budget meeting to Thursday.',
+  context: ['Tone: Friendly', 'Length: Under 100 words'],
+  /** The request on its own, then with the spoken tone and length added. */
+  before: { score: 67, perAnswer: 1775 },
+  after: { score: 85, perAnswer: 322 },
+  coach: [
+    { label: 'Add a purpose', points: 8, done: false },
+    { label: 'Add a length', points: 7, done: true },
+    { label: 'Add a tone', points: 6, done: true },
+  ],
+} as const;

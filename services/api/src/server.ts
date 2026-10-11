@@ -10,6 +10,7 @@ import { REPO_ROOT, loadLocalEnv } from './env';
 import { MemoryRateLimiter } from './ratelimit/memory';
 import { ClaudeRewriter } from './rewrite/claude-rewriter';
 import { FileSpendStore } from './spend/file-store';
+import { ClaudeStudioRefiner } from './studio/claude-refiner';
 
 const env = loadLocalEnv();
 const anthropic = env.ANTHROPIC_API_KEY
@@ -25,6 +26,7 @@ const deps: AppDeps = {
   rewriter:
     anthropic &&
     new ClaudeRewriter(anthropic, { model: env.REWRITE_MODEL, effort: env.REWRITE_EFFORT }),
+  studio: anthropic && new ClaudeStudioRefiner(anthropic, env.STUDIO_MODEL),
   spend: new FileSpendStore(`${REPO_ROOT}.local-state/spend.json`, env.REWRITE_DAILY_CAP_USD),
   limiter: new MemoryRateLimiter(),
 };
@@ -35,6 +37,9 @@ serve({ fetch: createApp(deps).fetch, hostname: '127.0.0.1', port: env.API_PORT 
   console.log(`API listening on http://127.0.0.1:${info.port}/api`);
   console.log(
     `  exact counts: Claude ${on(deps.counters.claude)}, Gemini ${on(deps.counters.gemini)}`,
+  );
+  console.log(
+    `  Studio refine (paid): ${on(deps.studio)}${deps.studio ? `, ${env.STUDIO_MODEL}` : ''}`,
   );
   console.log(
     `  AI rewrite (paid): ${on(deps.rewriter)}${deps.rewriter ? `, ${env.REWRITE_MODEL}, cap $${env.REWRITE_DAILY_CAP_USD}/day` : ''}`,

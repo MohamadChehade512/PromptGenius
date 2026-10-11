@@ -19,9 +19,12 @@ export function TermsText() {
 
       <h3>2. Free and paid features</h3>
       <p>
-        Everything is free except the optional <strong>AI rewrite</strong>, which calls the Claude
-        API. The rewrite button always shows its estimated price, asks you to confirm before its
-        first use, and never runs on its own. A daily spending cap applies to all users.
+        Everything is free except two optional features that call the Claude API: the Workshop’s{' '}
+        <strong>AI rewrite</strong> and Prompt Studio’s <strong>Refine with Claude</strong>. Both
+        are off until you turn them on, and both show their price first. The rewrite asks you to
+        confirm before its first use and never runs on its own. Refine with Claude runs each time
+        you pause while its switch is on, and shows what it has spent. A daily spending cap applies
+        to all users.
       </p>
 
       <h3>3. Your prompts and files</h3>
@@ -34,6 +37,15 @@ export function TermsText() {
         </a>
         . Exact token counts, when available, send your prompt to Anthropic or Google for counting
         only.
+      </p>
+
+      <p>
+        In <strong>Prompt Studio</strong>, speech is turned into text by your browser’s built-in
+        speech recognition. Some browsers (including Chrome and Edge) send your audio to their own
+        speech service to do this, under that browser’s terms. Prompt IQ never receives, stores or
+        logs your audio or the resulting text. If you switch on Refine with Claude, the text of what
+        you said is sent to Anthropic’s API to produce the prompt, under Anthropic’s terms; it isn’t
+        stored by Prompt IQ.
       </p>
 
       <h3>4. Your name and email</h3>

@@ -7,7 +7,12 @@ describe('api basics', () => {
     const { app } = makeApp({ counters: { claude: new FakeCounter() } });
     const res = await app.request('/api/health');
     const body = HealthResponse.parse(await res.json());
-    expect(body.features).toEqual({ countClaude: true, countGemini: false, rewrite: false });
+    expect(body.features).toEqual({
+      countClaude: true,
+      countGemini: false,
+      rewrite: false,
+      studio: false,
+    });
   });
 
   it('sets security headers', async () => {
