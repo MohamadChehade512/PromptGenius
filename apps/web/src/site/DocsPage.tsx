@@ -222,8 +222,7 @@ export function DocsPage() {
               <li>
                 <strong>Prompt tokens.</strong> ChatGPT counts are exact: OpenAI’s tokenizer runs in
                 your browser. Claude and Gemini counts are close estimates, labelled “estimate”, and
-                usually within about 10%. Exact counts for those two come once the Prompt IQ server
-                is live.
+                usually within about 10%.
               </li>
               <li>
                 <strong>Expected answer.</strong> A likely range for the reply, based on the use
@@ -330,8 +329,8 @@ export function DocsPage() {
                 live only if every check passes.
               </li>
               <li>
-                <strong>Coming next:</strong> a small Prompt IQ server for exact Claude and Gemini
-                token counts, and later the optional paid AI rewrite.
+                <strong>Paid Claude features:</strong> there is no Prompt IQ server. With your own
+                Anthropic API key, your browser calls Anthropic directly.
               </li>
             </ul>
           </section>
@@ -371,10 +370,15 @@ export function DocsPage() {
               question when something important is missing. It costs a fraction of a cent per update
               and shows what it has spent.
             </p>
-            <p className="note">
-              Refine with Claude isn’t on the live site yet: paid features wait for accounts and
-              spending limits. Either way, check the prompt before sending it.
+            <p>
+              Both paid features (Refine with Claude here, and the AI rewrite in the Workshop) use{' '}
+              <strong>your own Anthropic API key</strong>, so they are billed to your Anthropic
+              account and Prompt IQ charges nothing. The key is checked with Anthropic, then kept
+              only in your browser: for the current tab by default, or on the device if you ask. It
+              is sent only to Anthropic, and “Forget key” removes it. We recommend a separate key
+              with a spending limit set in the Anthropic Console.
             </p>
+            <p className="note">Either way, check the prompt before sending it.</p>
           </section>
 
           <section id="limits">
@@ -384,12 +388,12 @@ export function DocsPage() {
                 Scores and estimates may change as the method is refined, so the same prompt can
                 score differently between versions.
               </li>
-              <li>Claude and Gemini token counts are estimates until the server is live.</li>
-              <li>The AI rewrite isn’t available yet.</li>
+              <li>Claude and Gemini token counts are estimates.</li>
               <li>
-                Prompt Studio needs Chrome, Edge or Safari. Its Claude-powered refine isn’t on the
-                live site yet.
+                The AI rewrite and Refine with Claude need your own Anthropic API key. The daily
+                spending guard is kept in your browser, so set a real limit on the key itself.
               </li>
+              <li>Prompt Studio needs Chrome, Edge or Safari.</li>
             </ul>
           </section>
         </article>

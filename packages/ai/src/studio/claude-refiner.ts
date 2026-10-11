@@ -6,7 +6,7 @@ import {
   type StudioRefineRequest,
 } from '@promptgenius/api-contract';
 import { z } from 'zod';
-import { toUpstreamError } from '../counters/anthropic';
+import { toUpstreamError } from '../upstream';
 import { STUDIO_SYSTEM_PROMPT, buildStudioUserMessage } from './prompt';
 import { StudioError, type StudioOutcome, type StudioRefiner } from './types';
 

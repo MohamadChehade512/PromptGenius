@@ -2,17 +2,22 @@ import type { StudioRefineResult, StudioStatusResponse } from '@promptgenius/api
 import type { PlatformId } from '@promptgenius/core';
 import { useEffect, useRef, useState } from 'react';
 import { ApiRequestError, getStudioStatus, refineStudio } from '../lib/api';
+import { useApiKey } from '../lib/apiKey';
 
-/** Whether the server offers Studio's paid Claude refine, and its price. Undefined: it doesn't. */
+/**
+ * Whether Studio's paid Claude refine can run (through the server, or with the person's own
+ * API key), and its price. Undefined: it can't.
+ */
 export function useStudioStatus(): StudioStatusResponse | undefined {
   const [status, setStatus] = useState<StudioStatusResponse>();
+  const hasKey = !!useApiKey();
   useEffect(() => {
     const controller = new AbortController();
     getStudioStatus(controller.signal)
       .then((s) => setStatus(s.enabled ? s : undefined))
       .catch(() => setStatus(undefined));
     return () => controller.abort();
-  }, []);
+  }, [hasKey]);
   return status;
 }
 

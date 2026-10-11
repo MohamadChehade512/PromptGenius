@@ -1,7 +1,7 @@
 import { RewriteStatusResponse } from '@promptgenius/api-contract';
 import { describe, expect, it } from 'vitest';
-import { buildRewriteUserMessage, escapePromptBlock } from '../rewrite/prompt';
-import { RewriteError } from '../rewrite/types';
+import { buildRewriteUserMessage, escapePromptBlock } from '@promptgenius/ai';
+import { RewriteError } from '@promptgenius/ai';
 import { FakeRewriter, MemorySpendStore, makeApp, postJson, readEvents } from '../test-helpers';
 
 const request = {

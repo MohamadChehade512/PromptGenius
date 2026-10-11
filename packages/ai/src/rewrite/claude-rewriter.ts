@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { RewriteResult, type RewriteRequest, type RewriteUsage } from '@promptgenius/api-contract';
-import { toUpstreamError } from '../counters/anthropic';
+import { toUpstreamError } from '../upstream';
 import { REWRITE_SYSTEM_PROMPT, buildRewriteUserMessage } from './prompt';
 import { RewriteError, type RewriteOutcome, type RewriteProgress, type Rewriter } from './types';
 

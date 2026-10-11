@@ -10,18 +10,19 @@ import {
   type RewriteRequest,
   type StudioRefineRequest,
 } from '@promptgenius/api-contract';
+import { ApiRequestError } from './apiError';
+import { readApiKey } from './apiKey';
 
-/** Every API response is validated against the shared contract before use. */
-export class ApiRequestError extends Error {
-  constructor(
-    readonly status: number,
-    readonly code: string,
-    message: string,
-  ) {
-    super(message);
-  }
-}
+export { ApiRequestError };
 
+/**
+ * The paid Claude features run one of two ways: through the Prompt IQ server (local
+ * development), or, when the person has added their own Anthropic API key, straight from this
+ * browser. The direct code (and the Anthropic SDK) is only loaded once a key exists.
+ */
+const direct = () => import('./direct');
+
+/** Every server response is validated against the shared contract before use. */
 async function failure(res: Response): Promise<ApiRequestError> {
   const body = ApiError.safeParse(await res.json().catch(() => null));
   return new ApiRequestError(
@@ -52,13 +53,15 @@ export async function countTokens(
 }
 
 export async function getRewriteStatus(signal?: AbortSignal): Promise<RewriteStatusResponse> {
+  if (readApiKey()) return (await direct()).rewriteStatus();
   const res = await fetch('/api/rewrite/status', { signal });
   if (!res.ok) throw await failure(res);
   return RewriteStatusResponse.parse(await res.json());
 }
 
 /**
- * PAID: POST /api/rewrite and read the server-sent event stream. Only ever called from
+ * PAID: with the person's own key, calls Claude from this browser; otherwise POST /api/rewrite
+ * and read the server-sent event stream. Only ever called from
  * an explicit user click (PLAN.md §3.6 rule 5).
  */
 export async function streamRewrite(
@@ -66,6 +69,8 @@ export async function streamRewrite(
   onEvent: (e: RewriteEvent) => void,
   signal: AbortSignal,
 ): Promise<void> {
+  const key = readApiKey();
+  if (key) return (await direct()).streamRewrite(key, req, onEvent, signal);
   const res = await fetch('/api/rewrite', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -95,6 +100,7 @@ export async function streamRewrite(
 }
 
 export async function getStudioStatus(signal?: AbortSignal): Promise<StudioStatusResponse> {
+  if (readApiKey()) return (await direct()).studioStatus();
   const res = await fetch('/api/studio/status', { signal });
   if (!res.ok) throw await failure(res);
   return StudioStatusResponse.parse(await res.json());
@@ -108,6 +114,8 @@ export async function refineStudio(
   req: StudioRefineRequest,
   signal: AbortSignal,
 ): Promise<StudioRefineResponse> {
+  const key = readApiKey();
+  if (key) return (await direct()).refineStudio(key, req, signal);
   const res = await fetch('/api/studio/refine', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -116,4 +124,9 @@ export async function refineStudio(
   });
   if (!res.ok) throw await failure(res);
   return StudioRefineResponse.parse(await res.json());
+}
+
+/** Checks a pasted key with Anthropic (free) before it is saved. Throws ApiRequestError. */
+export async function verifyApiKey(key: string): Promise<void> {
+  return (await direct()).verifyKey(key);
 }

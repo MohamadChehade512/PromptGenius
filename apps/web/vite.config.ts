@@ -17,7 +17,8 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  "connect-src 'self'",
+  // The one outside address: Anthropic's API, for people who add their own key.
+  "connect-src 'self' https://api.anthropic.com",
   "worker-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",

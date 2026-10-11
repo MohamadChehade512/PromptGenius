@@ -4,9 +4,9 @@ import {
   type StudioRefineRequest,
 } from '@promptgenius/api-contract';
 import { describe, expect, it } from 'vitest';
-import { asSpokenToSpeaker } from '../studio/claude-refiner';
-import { STUDIO_SYSTEM_PROMPT, buildStudioUserMessage } from '../studio/prompt';
-import { StudioError, type StudioOutcome, type StudioRefiner } from '../studio/types';
+import { asSpokenToSpeaker } from '@promptgenius/ai';
+import { STUDIO_SYSTEM_PROMPT, buildStudioUserMessage } from '@promptgenius/ai';
+import { StudioError, type StudioOutcome, type StudioRefiner } from '@promptgenius/ai';
 import { MemorySpendStore, makeApp, postJson } from '../test-helpers';
 
 class FakeRefiner implements StudioRefiner {

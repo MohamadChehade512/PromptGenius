@@ -6,9 +6,11 @@ import type {
 import { analyzePrompt, type AnalysisInput, type AnalysisResult } from '@promptgenius/core';
 import { useRef, useState } from 'react';
 import { ApiRequestError, streamRewrite } from '../lib/api';
+import { useApiKey } from '../lib/apiKey';
 import { formatUsd } from '../lib/format';
 import { estimateRewriteUsd } from '../lib/rewriteEstimate';
 import { readStorage, writeStorage } from '../lib/storage';
+import { ApiKeyControl } from './ApiKeyControl';
 
 type State =
   | { kind: 'idle' }
@@ -28,6 +30,8 @@ export function RewritePanel(props: {
 }) {
   const { status, input, analysis } = props;
   const [state, setState] = useState<State>({ kind: 'idle' });
+  // With their own API key the rewrite runs from this browser; otherwise it needs the server.
+  const ownKey = useApiKey();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -36,9 +40,7 @@ export function RewritePanel(props: {
   const running = state.kind === 'running';
 
   let disabledReason: string | null = null;
-  if (!status) disabledReason = 'AI rewrite is unavailable (API offline).';
-  else if (!status.enabled)
-    disabledReason = 'AI rewrite is off: add ANTHROPIC_API_KEY to .env.local and restart.';
+  if (!status?.enabled) disabledReason = 'Add your Anthropic API key to turn on the AI rewrite.';
   else if (!prompt) disabledReason = 'Type a prompt first.';
   else if (status.remainingUsd <= 0)
     disabledReason = `Daily rewrite budget ($${status.capUsd}) reached. Resets at midnight UTC.`;
@@ -139,7 +141,7 @@ export function RewritePanel(props: {
             disabled={!!disabledReason}
             aria-describedby="rewrite-note"
           >
-            ✨ Rewrite with AI · Paid · ≈ {formatUsd(estimate)}
+            ✨ Rewrite with AI · Paid{status ? ` · ≈ ${formatUsd(estimate)}` : ''}
           </button>
         )}
         <div>
@@ -153,8 +155,9 @@ export function RewritePanel(props: {
           <p id="rewrite-note" className="hint">
             {disabledReason ??
               (status &&
-                `Daily budget: ${formatUsd(status.spentUsd)} of $${status.capUsd.toFixed(2)} used today.`)}
+                `${ownKey ? 'Spending guard on this device' : 'Daily budget'}: ${formatUsd(status.spentUsd)} of $${status.capUsd.toFixed(2)} used today.`)}
           </p>
+          {(ownKey || !status?.enabled) && <ApiKeyControl feature="the AI rewrite" />}
         </div>
       </div>
 
@@ -200,8 +203,9 @@ export function RewritePanel(props: {
         <h3 id="confirm-title">Use a paid AI rewrite?</h3>
         <p>
           This sends your prompt to the Claude API and costs about{' '}
-          <strong>{formatUsd(estimate)}</strong> per rewrite, billed to the Anthropic account
-          configured on this server. The exact cost is shown afterwards.
+          <strong>{formatUsd(estimate)}</strong> per rewrite, billed to{' '}
+          {ownKey ? 'your Anthropic API key' : 'the Anthropic account configured on this server'}.
+          The exact cost is shown afterwards.
         </p>
         <p className="hint">
           Your prompt isn't stored or logged by Prompt IQ. You'll only be asked once per session.

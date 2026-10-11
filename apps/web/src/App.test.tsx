@@ -110,7 +110,8 @@ describe('Paid AI rewrite', () => {
     type(WEAK);
     const button = await screen.findByRole('button', { name: /Rewrite with AI · Paid · ≈ \$/ });
     expect((button as HTMLButtonElement).disabled).toBe(true);
-    expect(await screen.findByText(/add ANTHROPIC_API_KEY/)).toBeTruthy();
+    expect(await screen.findByText(/Add your Anthropic API key to turn on/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Add your Anthropic API key' })).toBeTruthy();
   });
 
   it('never calls the paid endpoint without an explicit, confirmed click', async () => {

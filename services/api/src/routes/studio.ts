@@ -6,9 +6,9 @@ import {
 import { estimateTokens } from '@promptgenius/core';
 import { Hono } from 'hono';
 import { RATE_LIMITS, type AppDeps } from '../deps';
-import { rewriteModelSpec, usageCostUsd, worstCaseCostUsd } from '../rewrite/pricing';
-import { STUDIO_SYSTEM_PROMPT, buildStudioUserMessage } from '../studio/prompt';
-import { StudioError } from '../studio/types';
+import { rewriteModelSpec, usageCostUsd, worstCaseCostUsd } from '@promptgenius/ai';
+import { STUDIO_SYSTEM_PROMPT, buildStudioUserMessage } from '@promptgenius/ai';
+import { StudioError } from '@promptgenius/ai';
 import { clientKey, jsonError, parseJson } from './util';
 
 const DISABLED_MODEL = 'claude-haiku-4-5';

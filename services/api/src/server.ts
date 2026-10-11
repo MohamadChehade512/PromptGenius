@@ -8,9 +8,9 @@ import { GeminiTokenCounter } from './counters/gemini';
 import type { AppDeps } from './deps';
 import { REPO_ROOT, loadLocalEnv } from './env';
 import { MemoryRateLimiter } from './ratelimit/memory';
-import { ClaudeRewriter } from './rewrite/claude-rewriter';
+import { ClaudeRewriter } from '@promptgenius/ai';
 import { FileSpendStore } from './spend/file-store';
-import { ClaudeStudioRefiner } from './studio/claude-refiner';
+import { ClaudeStudioRefiner } from '@promptgenius/ai';
 
 const env = loadLocalEnv();
 const anthropic = env.ANTHROPIC_API_KEY

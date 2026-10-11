@@ -12,8 +12,8 @@ import {
   rewriteOverheadTokens,
   usageCostUsd,
   worstCaseCostUsd,
-} from '../rewrite/pricing';
-import { RewriteError } from '../rewrite/types';
+} from '@promptgenius/ai';
+import { RewriteError } from '@promptgenius/ai';
 import { clientKey, jsonError, parseJson } from './util';
 
 const DISABLED_MODEL = 'claude-opus-5';

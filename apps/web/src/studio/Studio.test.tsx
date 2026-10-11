@@ -230,7 +230,7 @@ describe('Prompt Studio: refine with Claude (paid)', () => {
   it('says so, and stays free, where Claude isn’t available', async () => {
     installFakeApi();
     render(<Studio />);
-    expect(await screen.findByText(/Not available here yet/)).toBeTruthy();
+    expect(await screen.findByRole('button', { name: 'Add your Anthropic API key' })).toBeTruthy();
     expect(
       screen.getByRole<HTMLInputElement>('switch', { name: /Refine with Claude/ }).disabled,
     ).toBe(true);

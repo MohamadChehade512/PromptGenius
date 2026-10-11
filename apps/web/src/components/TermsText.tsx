@@ -20,18 +20,29 @@ export function TermsText() {
       <h3>2. Free and paid features</h3>
       <p>
         Everything is free except two optional features that call the Claude API: the Workshop’s{' '}
-        <strong>AI rewrite</strong> and Prompt Studio’s <strong>Refine with Claude</strong>. Both
-        are off until you turn them on, and both show their price first. The rewrite asks you to
-        confirm before its first use and never runs on its own. Refine with Claude runs each time
-        you pause while its switch is on, and shows what it has spent. A daily spending cap applies
-        to all users.
+        <strong>AI rewrite</strong> and Prompt Studio’s <strong>Refine with Claude</strong>. To use
+        them you add your own Anthropic API key, and they are billed to your Anthropic account at
+        Anthropic’s prices; Prompt IQ charges nothing. Both are off until you turn them on, and both
+        show their price first. The rewrite asks you to confirm before its first use and never runs
+        on its own. Refine with Claude runs each time you pause while its switch is on, and shows
+        what it has spent. Prompt IQ stops making paid calls after about $2 a day on each device,
+        but this is a convenience, not a guarantee: set a spending limit on your key in the
+        Anthropic Console.
+      </p>
+      <p>
+        <strong>Your API key</strong> is kept only in this browser: until you close the tab, or on
+        this device if you choose that, until you select “Forget key”. It is sent only to Anthropic,
+        with each paid request. Prompt IQ never receives or stores it. Anyone who can use this
+        browser profile could use a remembered key, so don’t add one on a shared computer, and you
+        are responsible for charges made with it.
       </p>
 
       <h3>3. Your prompts and files</h3>
       <p>
         Prompts and attached files are processed in your browser. They are not stored or logged. If
         you use the AI rewrite, your prompt, the names (not contents) of attached files, and the
-        detected issues are sent to Anthropic's API to produce the rewrite, under{' '}
+        detected issues are sent from your browser straight to Anthropic's API to produce the
+        rewrite, under{' '}
         <a href="https://www.anthropic.com/legal/commercial-terms" target="_blank" rel="noreferrer">
           Anthropic's terms
         </a>

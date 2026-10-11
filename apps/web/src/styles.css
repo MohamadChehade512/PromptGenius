@@ -3700,3 +3700,54 @@ input[aria-invalid='true'] {
     transition: none !important;
   }
 }
+
+/* ---------- Your own API key ---------- */
+.key-control {
+  margin-top: 8px;
+}
+.key-control .hint {
+  margin: 0;
+}
+.key-control code {
+  font-size: 0.8125rem;
+}
+.key-dialog {
+  max-width: min(480px, calc(100vw - 32px));
+}
+.key-dialog form {
+  display: grid;
+  gap: 12px;
+}
+.key-dialog h3,
+.key-dialog p {
+  margin: 0;
+}
+.key-remember {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 6px;
+}
+.key-remember legend {
+  padding: 0;
+  margin-bottom: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-2);
+}
+.key-remember input[type='radio'] {
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  accent-color: var(--text);
+}
+.key-notes {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+.key-dialog .dialog-actions {
+  margin-top: 4px;
+}

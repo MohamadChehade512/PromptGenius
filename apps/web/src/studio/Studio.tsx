@@ -15,7 +15,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Segmented } from '../components/Segmented';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useSpeechRecognition, type SpeechError } from '../hooks/useSpeechRecognition';
+import { ApiKeyControl } from '../components/ApiKeyControl';
 import { useStudioRefine, useStudioStatus } from '../hooks/useStudioRefine';
+import { useApiKey } from '../lib/apiKey';
 import { formatUsd } from '../lib/format';
 import { HANDOFF_KEY } from '../lib/handoff';
 import { BAND_TONES } from '../lib/scoreTone';
@@ -231,6 +233,7 @@ export function Studio(props: { refineDelayMs?: number } = {}) {
   // PAID, so it's off until switched on, and never remembered between visits.
   const [useClaude, setUseClaude] = useState(false);
   const claudeStatus = useStudioStatus();
+  const ownKey = useApiKey();
 
   const addPhrase = useCallback(
     (text: string) => setHeard((prev) => (prev ? `${prev.trimEnd()} ${text}` : text)),
@@ -507,15 +510,16 @@ export function Studio(props: { refineDelayMs?: number } = {}) {
                   Understands corrections and context the built-in rules miss. Sends what you say to{' '}
                   {claudeStatus.modelLabel} each time you pause. About{' '}
                   {formatUsd(claudeStatus.typicalCostUsd)} per update, from a $
-                  {claudeStatus.capUsd.toFixed(2)} daily budget.
+                  {claudeStatus.capUsd.toFixed(2)} daily {ownKey ? 'spending guard' : 'budget'}.
                   {useClaude && ` Spent this session: ${formatUsd(claude.spentUsd)}.`}
                 </p>
               ) : (
                 <p className="hint">
-                  Not available here yet. Studio is using its built-in rules, which are free and
-                  stay in your browser.
+                  Understands corrections and context the built-in rules miss. Until it’s on, Studio
+                  uses its built-in rules, which are free and stay in your browser.
                 </p>
               )}
+              {(ownKey || !claudeStatus) && <ApiKeyControl feature="Refine with Claude" />}
             </div>
             {claude.error && (
               <p className="error" role="alert">

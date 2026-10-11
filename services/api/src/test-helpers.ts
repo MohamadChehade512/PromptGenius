@@ -3,7 +3,7 @@ import { createApp } from './app';
 import type { TokenCounter } from './counters/types';
 import type { AppDeps } from './deps';
 import { MemoryRateLimiter } from './ratelimit/memory';
-import { RewriteError, type RewriteOutcome, type Rewriter } from './rewrite/types';
+import { RewriteError, type RewriteOutcome, type Rewriter } from '@promptgenius/ai';
 import type { Reservation, SpendStatus, SpendStore } from './spend/types';
 
 export class FakeCounter implements TokenCounter {

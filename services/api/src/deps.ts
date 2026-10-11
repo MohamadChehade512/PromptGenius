@@ -1,7 +1,7 @@
 import type { RateLimiter } from './ratelimit/memory';
-import type { Rewriter } from './rewrite/types';
+import type { Rewriter } from '@promptgenius/ai';
 import type { SpendStore } from './spend/types';
-import type { StudioRefiner } from './studio/types';
+import type { StudioRefiner } from '@promptgenius/ai';
 import type { TokenCounter } from './counters/types';
 
 /**
