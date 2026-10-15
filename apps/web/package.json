@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
-    "@anthropic-ai/sdk": "^0.128.0",
+    "@anthropic-ai/sdk": "^0.133.0",
     "@promptgenius/ai": "workspace:*",
     "@promptgenius/api-contract": "workspace:*",
     "@promptgenius/core": "workspace:*",
-    "mammoth": "^1.12.3",
-    "pdfjs-dist": "^6.3.289",
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
@@ -24,8 +24,8 @@
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.1",
-    "jsdom": "^30.1.1",
-    "vite": "^8.3.0"
+    "@vitejs/plugin-react": "^6.1.2",
+    "jsdom": "^30.1.2",
+    "vite": "^8.3.4"
   }
 }

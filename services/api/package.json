@@ -9,14 +9,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.128.0",
-    "@google/genai": "^2.24.0",
-    "@hono/node-server": "^2.1.1",
+    "@anthropic-ai/sdk": "^0.133.0",
+    "@google/genai": "^2.28.0",
+    "@hono/node-server": "^2.1.4",
     "@promptgenius/ai": "workspace:*",
     "@promptgenius/api-contract": "workspace:*",
     "@promptgenius/core": "workspace:*",
-    "hono": "^4.13.8",
-    "zod": "^4.6.5"
+    "hono": "^4.13.13",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^24.13.6",
